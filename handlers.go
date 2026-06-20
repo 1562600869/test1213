@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
+
+var validThemes = map[string]bool{"历史人物": true, "影视明星": true, "体育冠军": true, "世界领袖": true}
+var validHallStatuses = map[string]bool{"开放": true, "关闭": true, "维修": true}
+var validLanguages = map[string]bool{"普通话": true, "粤语": true, "英语": true, "日语": true}
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -64,7 +67,6 @@ func createHall(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid parameters")
 		return
 	}
-	validThemes := map[string]bool{"历史人物": true, "影视明星": true, "体育冠军": true, "世界领袖": true}
 	if !validThemes[h.Theme] {
 		writeError(w, http.StatusBadRequest, "invalid theme")
 		return
@@ -72,8 +74,7 @@ func createHall(w http.ResponseWriter, r *http.Request) {
 	if h.Status == "" {
 		h.Status = "开放"
 	}
-	validStatus := map[string]bool{"开放": true, "关闭": true, "维修": true}
-	if !validStatus[h.Status] {
+	if !validHallStatuses[h.Status] {
 		writeError(w, http.StatusBadRequest, "invalid status")
 		return
 	}
@@ -96,6 +97,18 @@ func updateHall(w http.ResponseWriter, r *http.Request) {
 	}
 	if h.ID <= 0 {
 		writeError(w, http.StatusBadRequest, "invalid id")
+		return
+	}
+	if h.Name == "" || h.Theme == "" || h.MaxCapacity <= 0 {
+		writeError(w, http.StatusBadRequest, "invalid parameters")
+		return
+	}
+	if !validThemes[h.Theme] {
+		writeError(w, http.StatusBadRequest, "invalid theme")
+		return
+	}
+	if !validHallStatuses[h.Status] {
+		writeError(w, http.StatusBadRequest, "invalid status")
 		return
 	}
 	_, err := db.Exec("UPDATE halls SET name=?, theme=?, max_capacity=?, status=? WHERE id=?",
@@ -167,8 +180,7 @@ func createGuide(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid parameters")
 		return
 	}
-	validLangs := map[string]bool{"普通话": true, "粤语": true, "英语": true, "日语": true}
-	if !validLangs[g.Language] {
+	if !validLanguages[g.Language] {
 		writeError(w, http.StatusBadRequest, "invalid language")
 		return
 	}
@@ -194,6 +206,14 @@ func updateGuide(w http.ResponseWriter, r *http.Request) {
 	}
 	if g.ID <= 0 {
 		writeError(w, http.StatusBadRequest, "invalid id")
+		return
+	}
+	if g.Nickname == "" || g.Phone == "" || g.Language == "" {
+		writeError(w, http.StatusBadRequest, "invalid parameters")
+		return
+	}
+	if !validLanguages[g.Language] {
+		writeError(w, http.StatusBadRequest, "invalid language")
 		return
 	}
 	_, err := db.Exec("UPDATE guides SET nickname=?, phone=?, language=?, status=? WHERE id=?",
@@ -503,6 +523,5 @@ func todayReservationsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		list = append(list, rv)
 	}
-	_ = strings.TrimSpace
 	writeJSON(w, http.StatusOK, list)
 }
