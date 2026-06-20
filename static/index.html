@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蜡像馆参观预约与导览管理系统</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🏛️ 蜡像馆参观预约与导览管理系统</h1>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="halls">展厅管理</button>
+    <button class="tab" data-tab="guides">导览员管理</button>
+    <button class="tab" data-tab="reservations">参观预约</button>
+    <button class="tab" data-tab="today">今日预约</button>
+    <button class="tab" data-tab="stats">本月统计</button>
+  </nav>
+
+  <section id="halls" class="tab-content active">
+    <div class="panel">
+      <h2>展厅列表</h2>
+      <div class="form-row">
+        <input id="hallName" placeholder="展厅名">
+        <select id="hallTheme">
+          <option value="历史人物">历史人物</option>
+          <option value="影视明星">影视明星</option>
+          <option value="体育冠军">体育冠军</option>
+          <option value="世界领袖">世界领袖</option>
+        </select>
+        <input id="hallCapacity" type="number" placeholder="最大容纳人数" min="1">
+        <select id="hallStatus">
+          <option value="开放">开放</option>
+          <option value="关闭">关闭</option>
+          <option value="维修">维修</option>
+        </select>
+        <button onclick="addHall()">添加展厅</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>展厅名</th><th>主题</th><th>最大容纳</th><th>状态</th><th>操作</th></tr>
+        </thead>
+        <tbody id="hallList"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="guides" class="tab-content">
+    <div class="panel">
+      <h2>导览员列表</h2>
+      <div class="form-row">
+        <input id="guideNickname" placeholder="昵称">
+        <input id="guidePhone" placeholder="手机">
+        <select id="guideLanguage">
+          <option value="普通话">普通话</option>
+          <option value="粤语">粤语</option>
+          <option value="英语">英语</option>
+          <option value="日语">日语</option>
+        </select>
+        <select id="guideStatus">
+          <option value="在职">在职</option>
+          <option value="离职">离职</option>
+        </select>
+        <button onclick="addGuide()">添加导览员</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>昵称</th><th>手机</th><th>擅长语言</th><th>状态</th><th>操作</th></tr>
+        </thead>
+        <tbody id="guideList"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="reservations" class="tab-content">
+    <div class="panel">
+      <h2>参观预约列表</h2>
+      <div class="form-row">
+        <input id="guestName" placeholder="客人姓名">
+        <input id="guestPhone" placeholder="客人手机">
+        <select id="resHall"><option value="">选择展厅</option></select>
+        <input id="resTime" type="datetime-local" placeholder="时段">
+        <input id="resPeople" type="number" placeholder="人数" min="1">
+        <button onclick="addReservation()">提交预约</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>客人</th><th>手机</th><th>展厅</th><th>时段</th>
+            <th>人数</th><th>导览员</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="reservationList"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="today" class="tab-content">
+    <div class="panel">
+      <h2>今日预约 <small id="todayDate"></small></h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>客人</th><th>手机</th><th>展厅</th><th>时段</th>
+            <th>人数</th><th>导览员</th>
+          </tr>
+        </thead>
+        <tbody id="todayList"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="stats" class="tab-content">
+    <div class="panel">
+      <h2>本月各展厅主题预约次数</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>主题</th><th>预约次数</th></tr>
+        </thead>
+        <tbody id="statsList"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="assignModal" class="modal" style="display:none">
+    <div class="modal-content">
+      <h3>分配导览员</h3>
+      <select id="assignGuideSelect"></select>
+      <div class="modal-actions">
+        <button onclick="closeAssignModal()">取消</button>
+        <button onclick="confirmAssign()">确认分配</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
